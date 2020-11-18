@@ -1,85 +1,67 @@
-import React, { Component, useEffect, useState } from "react";
-//import "./styles.css";
-
-import "../styles/App.css";
-// import React, { Component, useEffect, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
+import "../styles.App.css";
 
 const App = () => {
-   const [renderBall, setRenderBall] = useState(false);
-   const [ballPosition, setBallPosition] = useState({
-      left: "0px",
-      top: "0px"
-   });
-   const reset = () => {
-      setRenderBall(false);
-      setBallPosition({
-         left: "0px",
-         top: "0px"
-      });
-   };
-
-   //{key:ArrowRight, keyCode:39} or
-   //{key:ArrowDown, keyCode:40} or
-   //{key:ArrowUp, keyCode:38},
-   //{key:ArrowLeft, keyCode:37}.
-
-   const buttonClickHandler = () => {
-      setRenderBall(true);
-   };
-   const renderChoice = () => {
-      if (renderBall) {
-         return <div className="ball" style={ballPosition}></div>;
-      } else
-         return (
-            <button className="start" onClick={buttonClickHandler}>
-               Click For One Ball
-            </button>
-         );
-   };
-
-   const onKeyPressed = (e) => {
-      if (renderBall === false) return;
-      if (e.keyCode === 39) {
-         setBallPosition({
-            left: +ballPosition.left.split("px")[0] + 5 + "px",
-            top: ballPosition.top
-         });
+  const [renderBall, setRenderBall] = useState(false);
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+  const [ballPosition, setBallPosition] = useState({
+    left: "0px",
+    top: "0px"
+  });
+  const reset = () => {
+    setX(0);
+    setY(0);
+    setBallPosition({ left: "0px", top: "0px" });
+    setRenderBall(false);
+  };
+  const buttonClickHandler = () => {
+    setRenderBall(true);
+  };
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.keyCode === 39) {
+        setX(x + 5);
+        setBallPosition({ left: `${x + 5}px`, top: `${y}px` });
       }
-      if (e.keyCode === 40) {
-         setBallPosition({
-            left: ballPosition.left,
-            top: +ballPosition.top.split("px")[0] + 5 + "px"
-         });
+      if (event.keyCode === 37) {
+        setX(x - 5);
+        setBallPosition({ left: `${x - 5}px`, top: `${y}px` });
       }
-      if (e.keyCode === 38) {
-         setBallPosition({
-            left: ballPosition.left,
-            top: +ballPosition.top.split("px")[0] - 5 + "px"
-         });
+      if (event.keyCode === 38) {
+        setY(y - 5);
+        setBallPosition({ left: `${x}px`, top: `${y - 5}px` });
       }
-      if (e.keyCode === 37) {
-         setBallPosition({
-            left: +ballPosition.left.split("px")[0] - 5 + "px",
-            top: ballPosition.top
-         });
+      if (event.keyCode === 40) {
+        setY(y + 5);
+        setBallPosition({ left: `${x}px`, top: `${y + 5}px` });
       }
-   };
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [x, y]);
 
-   useEffect(() => {
-      document.addEventListener("keydown", onKeyPressed);
-      return () => {
-         document.removeEventListener("keydown", onKeyPressed);
-      };
-   });
+  const renderChoice = () => {
+    if (renderBall) {
+      return <div className="ball" style={ballPosition}></div>;
+    } else
+      return (
+        <button onClick={buttonClickHandler} className="start">
+          Start
+        </button>
+      );
+  };
 
-   return (
-      <div className="playground">
-         {renderChoice()}
-         <button onClick={reset} className="reset">
-            Reset
-         </button>
-      </div>
-   );
+  return (
+    <div className="playground">
+      <button onClick={reset} className="reset">
+        Reset
+      </button>
+      {renderChoice()}
+    </div>
+  );
 };
 
 export default App;
